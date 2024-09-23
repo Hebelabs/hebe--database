@@ -27,7 +27,7 @@
 	},
 	"autoload-dev": {
 		"psr-4": {
-			"Sura\\Database\\Tests\\": "tests"
+			"Sura\\Database\\Tests\\": "app/tests"
 		}
 	},
 	"minimum-stability": "dev",

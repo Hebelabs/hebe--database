@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sura\Database;
+namespace Sura\DataBase;
 
 use mysqli;
 use Sura\Database\Exception\DatabaseException;
@@ -45,7 +45,7 @@ class DataBase {
 		self::$queryLog = $status;
 	}
 	/* private-конструктор, подключающийся к базе данных, устанавливающий локаль и кодировку соединения */
-	private function __construct($dbhost, $dbuser, $dbpwd, $dbname)
+	public function __construct($dbhost, $dbuser, $dbpwd, $dbname)
 	{
 		$this->dbhost = $dbhost;
 		$this->dbuser = $dbuser;

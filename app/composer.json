@@ -1,7 +1,7 @@
 {
-	"name": "hebe/database",
-	"description": "The Hebe database.",
-	"keywords": ["database", "hebe"],
+	"name": "sura/database",
+	"description": "The sura database.",
+	"keywords": ["database", "sura"],
 	"license": ["MIT"],
 	"authors": [
 		{
@@ -22,12 +22,12 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"Hebe\\Database\\": "src"
+			"Sura\\Database\\": "src"
 		}
 	},
 	"autoload-dev": {
 		"psr-4": {
-			"Hebe\\Database\\Tests\\": "tests"
+			"Sura\\Database\\Tests\\": "tests"
 		}
 	},
 	"minimum-stability": "dev",

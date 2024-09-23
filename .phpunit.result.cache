@@ -1,0 +1,1 @@
+{"version":1,"defects":{"Sura\\DataBase\\DataBaseTest::testGetDB":8,"Sura\\DataBase\\DataBaseTest::testQuery":5},"times":{"Sura\\DataBase\\DataBaseTest::testGetDB":4.092,"Sura\\DataBase\\DataBaseTest::testQuery":0.003}}
