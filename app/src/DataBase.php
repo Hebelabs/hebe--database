@@ -2,11 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Sura\DataBase;
+namespace Sura\Database;
 
 use mysqli;
-use Sura\Database\Exception\DatabaseException;
-use mysqli_sql_exception;
 
 /*
 * @package Sura\Database
@@ -16,16 +14,14 @@ use mysqli_sql_exception;
 */
 class DataBase {
 	/* Константы для подключения к базе данных */
-	private $dbhost; // Хост базы данных
-	private $dbuser; // Имя пользователя базы данных
-	private $dbpwd; // Пароль пользователя базы данных
-	private $dbname; // Имя базы данных
-	
-	
+	private $dbhost = 'localhost'; // Хост базы данных
+	private $dbuser = 'root'; // Имя пользователя базы данных
+	private $dbpwd = ''; // Пароль пользователя базы данных
+	private $dbname = 'test'; // Имя базы данных
 	
 	private static $db = null; // Единственный экземпляр класса, чтобы не создавать множество подключений
-	private mysqli $mysqli; // Идентификатор соединения
-	private string $sym_query = "{?}"; // "Символ значения в запросе"
+	private $mysqli; // Идентификатор соединения
+	private $sym_query = "{?}"; // "Символ значения в запросе"
 	
 	public static $queryLog = false;
 	
@@ -52,14 +48,21 @@ class DataBase {
 		$this->dbpwd = $dbpwd;
 		$this->dbname = $dbname;
 
-		$this->mysqli = new mysqli($dbhost, $dbuser, $dbpwd, $dbname);
+		// $dbConf = Registry::get('dbConf');
+		$this->mysqli = new mysqli(
+			$dbhost,
+			$dbuser,
+			$dbpwd,
+			$dbname,
+		);
+
 		$this->mysqli->query("SET lc_time_names = 'ru_RU'");
 		$this->mysqli->query("SET NAMES 'utf8'");
 	}
 	
 	/* Вспомогательный метод, который заменяет "символ значения в запросе" на конкретное значение, которое проходит через "функции безопасности" */
-	private function getQuery($query, $params): array|string
-    {
+	private function getQuery($query, $params)
+	{
 		if ($params) {
 			for ($i = 0; $i < count($params); $i++) {
 				$pos   = strpos($query, $this->sym_query);
@@ -74,11 +77,10 @@ class DataBase {
 	}
 	
 	/* SELECT-метод, возвращающий таблицу результатов */
-	public function select($query, $params = false): bool|array
-    {
+	public function select($query, $params = false)
+	{
 		$result_set = $this->mysqli->query($this->getQuery($query, $params));
-		if (!$result_set)
-            return false;
+		if (!$result_set) return false;
 		return $this->resultSetToArray($result_set);
 	}
 	
@@ -86,18 +88,15 @@ class DataBase {
 	public function selectRow($query, $params = false)
 	{
 		$result_set = $this->mysqli->query($this->getQuery($query, $params));
-		if ($result_set->num_rows != 1)
-            return false;
-		else
-            return $result_set->fetch_assoc();
+		if ($result_set->num_rows != 1) return false;
+		else return $result_set->fetch_assoc();
 	}
 	
 	/* SELECT-метод, возвращающий значение из конкретной ячейки */
 	public function selectCell($query, $params = false)
 	{
 		$result_set = $this->mysqli->query($this->getQuery($query, $params));
-		if ((!$result_set) || ($result_set->num_rows != 1))
-            return false;
+		if ((!$result_set) || ($result_set->num_rows != 1)) return false;
 		else {
 			$arr = array_values($result_set->fetch_assoc());
 			return $arr[0];
@@ -146,10 +145,8 @@ class DataBase {
 		$query = 'UPDATE `'.$table.'` SET `'.$column.'` = '.$value.' WHERE '.$where;
 		
 		$success = $this->mysqli->query($this->getQuery($query, array($value)));
-		if ($success)
-            return true;
-		else
-            return false;
+		if ($success) return true;
+		else return false;
 	}
 	
 	//DELETE
@@ -159,10 +156,8 @@ class DataBase {
 		//$params = false;
 		$query = 'DELETE FROM `'.$table.'` WHERE '.$where;
 		$success = $this->mysqli->query($this->getQuery($query, $params));
-		if ($success)
-            return true;
-		else
-            return false;
+		if ($success) return true;
+		else return false;
 	}
 	
 	//CREATE TAABLE
@@ -174,13 +169,10 @@ class DataBase {
 		$query = "CREATE TABLE ".$table." ( ".$columns." ) ".$ecc;
 		$success = $this->mysqli->query($this->getQuery($query, $params));
 		if ($success) {
-			if ($this->mysqli->insert_id === 0)
-                return true;
-			else
-                return $this->mysqli->insert_id;
+			if ($this->mysqli->insert_id === 0) return true;
+			else return $this->mysqli->insert_id;
 		}
-		else
-            return false;
+		else return false;
 	}
 	
 	//DELETE TAABLE
@@ -190,10 +182,8 @@ class DataBase {
 		//$params = false;
 		$query = 'DROP TABLE IF EXISTS `'.$table.'`';
 		$success = $this->mysqli->query($this->getQuery($query, $params));
-		if ($success)
-            return true;
-		else
-            return false;
+		if ($success) return true;
+		else return false;
 	}
 	
 	public function insert($table, $data)
@@ -244,8 +234,7 @@ class DataBase {
 	
 	/* При уничтожении объекта закрывается соединение с базой данных */
 	public function __destruct() {
-		if ($this->mysqli)
-            $this->mysqli->close();
+		if ($this->mysqli) $this->mysqli->close();
 	}
 	
 	public function oneWord($str)
