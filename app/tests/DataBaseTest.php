@@ -30,9 +30,4 @@ class DataBaseTest extends TestCase
 
     }
 
-    public function testQuery()
-    {
-
-    }
-
 }

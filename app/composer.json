@@ -33,6 +33,8 @@
 	"minimum-stability": "dev",
 	"scripts": {
 		"phpstan": "phpstan analyse",
-		"tester": "tester tests -s"
+		"tester": "tester tests -s",
+		"test": "phpunit --bootstrap vendor/autoload.php tests"
+
 	}
 }

@@ -33,6 +33,7 @@
 	"minimum-stability": "dev",
 	"scripts": {
 		"phpstan": "phpstan analyse",
-		"tester": "tester tests -s"
+		"tester": "tester tests -s",
+		"test": "app/vendor/bin/phpunit --configuration app/phpunit.xml.dist app\\tests --teamcity"
 	}
 }

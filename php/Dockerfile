@@ -15,7 +15,7 @@ COPY ./composer.json .
 RUN composer install --prefer-dist --no-dev --no-scripts --no-progress --no-interaction
 
 
-COPY ./app/system/data/db_config.php.example ./var/www/html/system/data/db_config.php
+#COPY ./app/system/data/db_config.php.example ./var/www/html/system/data/db_config.php
 
 
 
