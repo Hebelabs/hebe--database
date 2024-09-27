@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 namespace Sura\Database;
@@ -39,12 +38,17 @@ class DataBase {
 		return self::$db;
 	}
 	
-	/* Получение лога запросов */
+	/*
+	*  Получение лога запросов 
+	*/
 	public static function log($status = true)
 	{
 		self::$queryLog = $status;
 	}
-	/* private-конструктор, подключающийся к базе данных, устанавливающий локаль и кодировку соединения */
+	/*
+	* private-конструктор, подключающийся к базе данных, 
+	* устанавливающий локаль и кодировку соединения 
+	*/
 	private function __construct($dbhost, $dbuser, $dbpwd, $dbname)
 	{
 		$this->dbhost = $dbhost;
@@ -58,7 +62,12 @@ class DataBase {
 		$this->mysqli->query("SET NAMES 'utf8'");
 	}
 	
-	/* Вспомогательный метод, который заменяет "символ значения в запросе" на конкретное значение, которое проходит через "функции безопасности" */
+	/* 
+	* Вспомогательный метод, 
+	* который заменяет "символ значения в запросе" 
+	* на конкретное значение, 
+	* которое проходит через "функции безопасности"
+	*/
 	private function getQuery($query, $params)
 	{
 		if ($params) {
@@ -74,7 +83,9 @@ class DataBase {
 		return $query;
 	}
 	
-	/* SELECT-метод, возвращающий таблицу результатов */
+	/* 
+	* SELECT-метод, возвращающий таблицу результатов 
+	*/
 	public function select($query, $params = false)
 	{
 		$result_set = $this->mysqli->query($this->getQuery($query, $params));
@@ -82,7 +93,9 @@ class DataBase {
 		return $this->resultSetToArray($result_set);
 	}
 	
-	/* SELECT-метод, возвращающий одну строку с результатом */
+	/* 
+	* SELECT-метод, возвращающий одну строку с результатом 
+	*/
 	public function selectRow($query, $params = false)
 	{
 		$result_set = $this->mysqli->query($this->getQuery($query, $params));
@@ -90,7 +103,9 @@ class DataBase {
 		else return $result_set->fetch_assoc();
 	}
 	
-	/* SELECT-метод, возвращающий значение из конкретной ячейки */
+	/* 
+	* SELECT-метод, возвращающий значение из конкретной ячейки 
+	*/
 	public function selectCell($query, $params = false)
 	{
 		$result_set = $this->mysqli->query($this->getQuery($query, $params));
@@ -101,7 +116,10 @@ class DataBase {
 		}
 	}
 	
-	/* НЕ-SELECT методы (INSERT, UPDATE, DELETE). Если запрос INSERT, то возвращается id последней вставленной записи */
+	/* 
+	* НЕ-SELECT методы (INSERT, UPDATE, DELETE). 
+	* Если запрос INSERT, то возвращается id последней вставленной записи 
+	*/
 	public function query($query, $params = false)
 	{
 		$success = $this->mysqli->query($this->getQuery($query, $params));
@@ -115,8 +133,9 @@ class DataBase {
 		return false;
 	}
 	
-	//UPDATE
-	/* UPDATE-метод обновляет данные */	
+	/* 
+	* UPDATE-метод обновляет данные в таблице
+	*/	
 	public function update($table, $where, $data)
 	{
 		$params = array();
@@ -135,7 +154,10 @@ class DataBase {
 		return false;
 	}
 	
-	//UPDATE CELL
+	/*
+	* UPDATE-метод обновляет данные в ячейке, 
+	* если запрос UPDATE, то возвращается id последней вставленной записии
+	*/
 	public function updateCell($table, $column, $value, $where)
 	{
 		$params = array();
@@ -147,7 +169,9 @@ class DataBase {
 		else return false;
 	}
 	
-	//DELETE
+	/*  
+	* DELETE-метод удаляет записи из таблицы
+	*/
 	public function delete($table, $where)
 	{//DELETE
 		$params = array();
@@ -158,7 +182,9 @@ class DataBase {
 		else return false;
 	}
 	
-	//CREATE TAABLE
+	/* 
+	* CREATE-метод создает таблицу с указанными колонками и заполняет данными в таблице
+	*/
 	public function table_create($table, $columns)
 	{
 		$params = false;
@@ -181,7 +207,9 @@ class DataBase {
 	//   `photo` varchar(255) NOT NULL DEFAULT '',
 	//   `date` varchar(10) NOT NULL DEFAULT '0'
 	// )"
-	
+	/* 
+	* CREATE-метод создает таблицу с указанным sql-запросом и заполняет данными в таблице
+	*/
 	public function tableCreateTwo($table)
 	{
 		$params = false;
@@ -199,7 +227,9 @@ class DataBase {
 		else return false;
 	}	
 	
-	//DELETE TAABLE
+	/*
+	* DROP-метод удаляет таблицу
+	*/
 	public function table_delete($table)
 	{
 		$params = array();
@@ -210,6 +240,9 @@ class DataBase {
 		else return false;
 	}
 	
+	/*
+	* INSERT-метод обновляет данные в таблице
+	*/
 	public function insert($table, $data)
 	{//Добавление новой строки в БД
 		$columns = "";
@@ -233,12 +266,17 @@ class DataBase {
 		}
 	}
 	
+	/*
+	* SELECT-метод возвращает данные из таблицы 
+	* с указанными колонками и указанными значениями 
+	* в указанных колонках
+	*/
 	public function inDB($col, $table, $cel, $value)
 	{
 		$query = 
 		"SELECT `".$this->oneWord($col)."` 
-        FROM `".$this->oneWord($table)."` 
-        WHERE `".$this->oneWord($cel)."` = {?}";
+		FROM `".$this->oneWord($table)."` 
+		WHERE `".$this->oneWord($cel)."` = {?}";
 		
 		$params = array($value);
 		$res = $this->select($query, $params);
@@ -246,7 +284,9 @@ class DataBase {
 		else return true;
 	}
 	
-	/* Преобразование result_set в двумерный массив */
+	/*
+	* Преобразование result_set в двумерный массив
+	*/
 	private function resultSetToArray($result_set) {
 		$array = array();
 		while (($row = $result_set->fetch_assoc()) != false) {
@@ -255,11 +295,16 @@ class DataBase {
 		return $array;
 	}
 	
-	/* При уничтожении объекта закрывается соединение с базой данных */
+	/* 
+	* При уничтожении объекта закрывается соединение с базой данных 
+	*/
 	public function __destruct() {
 		if ($this->mysqli) $this->mysqli->close();
 	}
 	
+	/* 
+	* удаление пробелов в строке
+	*/
 	public function oneWord($str)
 	{
 		return str_replace(' ', '', $str);
