@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Sura\Database;
 
-use mysqli;
+use Sura\Database\Exception\DatabaseException;
+use mysqli_sql_exception;
 
 /*
 * @package Sura\Database
@@ -30,32 +31,34 @@ class DataBase {
 	то возвращается, если его не было,
 	то создаётся и возвращается (паттерн Singleton) 
 	*/
-	public static function getDB()
+	public static function getDB($dbhost, $dbuser, $dbpwd, $dbname)
 	{
-		if (self::$db == null) self::$db = new DataBase();
+		if (self::$db == null) {
+			$this->dbhost = $dbhost;
+			$this->dbuser = $dbuser;
+			$this->dbpwd = $dbpwd;
+			$this->dbname = $dbname;
+			
+			self::$db = new DataBase()
+		} 
 		return self::$db;
 	}
 	
+	/* Получение лога запросов */
 	public static function log($status = true)
 	{
 		self::$queryLog = $status;
 	}
 	/* private-конструктор, подключающийся к базе данных, устанавливающий локаль и кодировку соединения */
-	public function __construct($dbhost, $dbuser, $dbpwd, $dbname)
+	private function __construct()
 	{
-		$this->dbhost = $dbhost;
-		$this->dbuser = $dbuser;
-		$this->dbpwd = $dbpwd;
-		$this->dbname = $dbname;
-
+		// $this->dbhost = $dbhost;
+		// $this->dbuser = $dbuser;
+		// $this->dbpwd = $dbpwd;
+		// $this->dbname = $dbname;
+		
 		// $dbConf = Registry::get('dbConf');
-		$this->mysqli = new mysqli(
-			$dbhost,
-			$dbuser,
-			$dbpwd,
-			$dbname,
-		);
-
+		$this->mysqli = new mysqli($this->dbhost, $this->dbuser, $this->dbpwd, $this->dbname);
 		$this->mysqli->query("SET lc_time_names = 'ru_RU'");
 		$this->mysqli->query("SET NAMES 'utf8'");
 	}
@@ -109,12 +112,12 @@ class DataBase {
 		$success = $this->mysqli->query($this->getQuery($query, $params));
 		if ($success) {
 			if ($this->mysqli->insert_id === 0) 
-				return true;
+			return true;
 			else 
-				return $this->mysqli->insert_id;
+			return $this->mysqli->insert_id;
 		}
 		else 
-			return false;
+		return false;
 	}
 	
 	//UPDATE
@@ -132,9 +135,9 @@ class DataBase {
 		$query = 'UPDATE `'.$table.'` SET '.substr($col_val, 0, strlen($col_val)-1).' WHERE '.$where;
 		$success = $this->mysqli->query($this->getQuery($query, $params));
 		if ($success) 
-			return true;
+		return true;
 		else 
-			return false;
+		return false;
 	}
 	
 	//UPDATE CELL
@@ -208,7 +211,6 @@ class DataBase {
 			return false;
 		}
 	}
-	
 	
 	public function inDB($col, $table, $cel, $value)
 	{
