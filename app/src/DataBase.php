@@ -173,6 +173,32 @@ class DataBase {
 		else return false;
 	}
 	
+	//CREATE TAABLE
+	// "CREATE TABLE `example` (
+	//   `id` INT( 11 ) AUTO_INCREMENT PRIMARY KEY,
+	//   `title` varchar(100) NOT NULL DEFAULT '',
+	//   `owner` bigint(20) NOT NULL DEFAULT '0',
+	//   `photo` varchar(255) NOT NULL DEFAULT '',
+	//   `date` varchar(10) NOT NULL DEFAULT '0'
+	// )"
+	
+	public function tableCreateTwo($table)
+	{
+		$params = false;
+		$collate='utf8';
+		$ecc = "ENGINE=InnoDB /*!40101 DEFAULT CHARACTER SET " . $collate . " COLLATE " . $collate . "_general_ci */";
+		$query = $table." ".$ecc;
+		$success = $this->mysqli->query($this->getQuery($query, $params));
+		if ($success) {
+			if ($this->mysqli->insert_id === 0) {
+				return true;
+			} else {
+				return $this->mysqli->insert_id;
+			}
+		}
+		else return false;
+	}	
+	
 	//DELETE TAABLE
 	public function table_delete($table)
 	{
