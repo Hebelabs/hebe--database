@@ -33,13 +33,8 @@ class DataBase {
 	*/
 	public static function getDB($dbhost, $dbuser, $dbpwd, $dbname)
 	{
-		if (self::$db == null) {
-			$this->dbhost = $dbhost;
-			$this->dbuser = $dbuser;
-			$this->dbpwd = $dbpwd;
-			$this->dbname = $dbname;
-			
-			self::$db = new DataBase()
+		if (self::$db == null) {			
+			self::$db = new DataBase($dbhost, $dbuser, $dbpwd, $dbname);
 		} 
 		return self::$db;
 	}
@@ -50,15 +45,15 @@ class DataBase {
 		self::$queryLog = $status;
 	}
 	/* private-конструктор, подключающийся к базе данных, устанавливающий локаль и кодировку соединения */
-	private function __construct()
+	private function __construct($dbhost, $dbuser, $dbpwd, $dbname)
 	{
-		// $this->dbhost = $dbhost;
-		// $this->dbuser = $dbuser;
-		// $this->dbpwd = $dbpwd;
-		// $this->dbname = $dbname;
+		$this->dbhost = $dbhost;
+		$this->dbuser = $dbuser;
+		$this->dbpwd = $dbpwd;
+		$this->dbname = $dbname;
 		
 		// $dbConf = Registry::get('dbConf');
-		$this->mysqli = new mysqli($this->dbhost, $this->dbuser, $this->dbpwd, $this->dbname);
+		$this->mysqli = new \mysqli($this->dbhost, $this->dbuser, $this->dbpwd, $this->dbname);
 		$this->mysqli->query("SET lc_time_names = 'ru_RU'");
 		$this->mysqli->query("SET NAMES 'utf8'");
 	}
