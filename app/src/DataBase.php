@@ -70,10 +70,13 @@ class DataBase {
 	*/
 	private function getQuery($query, $params)
 	{
-		if ($params) {
+		if (is_array($params)) {
+			// $params = is_numeric($params) ? $params : count($params); //количество параметров
 			for ($i = 0; $i < count($params); $i++) {
 				$pos   = strpos($query, $this->sym_query);
+				// var_dump($params);
 				$arg   = "'".$this->mysqli->real_escape_string($params[$i])."'";
+				
 				$query = substr_replace($query, $arg, $pos, strlen($this->sym_query));
 			}
 		}
@@ -82,7 +85,7 @@ class DataBase {
 		}
 		return $query;
 	}
-	
+
 	/* 
 	* SELECT-метод, возвращающий таблицу результатов 
 	*/
@@ -92,7 +95,7 @@ class DataBase {
 		if (!$result_set) return false;
 		return $this->resultSetToArray($result_set);
 	}
-	
+
 	/* 
 	* SELECT-метод, возвращающий одну строку с результатом 
 	*/
@@ -102,7 +105,7 @@ class DataBase {
 		if ($result_set->num_rows != 1) return false;
 		else return $result_set->fetch_assoc();
 	}
-	
+
 	/* 
 	* SELECT-метод, возвращающий значение из конкретной ячейки 
 	*/
@@ -115,7 +118,7 @@ class DataBase {
 			return $arr[0];
 		}
 	}
-	
+
 	/* 
 	* НЕ-SELECT методы (INSERT, UPDATE, DELETE). 
 	* Если запрос INSERT, то возвращается id последней вставленной записи 
@@ -132,7 +135,7 @@ class DataBase {
 		else 
 		return false;
 	}
-	
+
 	/* 
 	* UPDATE-метод обновляет данные в таблице
 	*/	
@@ -153,7 +156,7 @@ class DataBase {
 		else 
 		return false;
 	}
-	
+
 	/*
 	* UPDATE-метод обновляет данные в ячейке, 
 	* если запрос UPDATE, то возвращается id последней вставленной записии
@@ -168,7 +171,7 @@ class DataBase {
 		if ($success) return true;
 		else return false;
 	}
-	
+
 	/*  
 	* DELETE-метод удаляет записи из таблицы
 	*/
@@ -181,7 +184,7 @@ class DataBase {
 		if ($success) return true;
 		else return false;
 	}
-	
+
 	/* 
 	* CREATE-метод создает таблицу с указанными колонками и заполняет данными в таблице
 	*/
@@ -198,7 +201,7 @@ class DataBase {
 		}
 		else return false;
 	}
-	
+
 	//CREATE TAABLE
 	// "CREATE TABLE `example` (
 	//   `id` INT( 11 ) AUTO_INCREMENT PRIMARY KEY,
@@ -226,7 +229,7 @@ class DataBase {
 		}
 		else return false;
 	}	
-	
+
 	/*
 	* DROP-метод удаляет таблицу
 	*/
@@ -239,7 +242,7 @@ class DataBase {
 		if ($success) return true;
 		else return false;
 	}
-	
+
 	/*
 	* INSERT-метод обновляет данные в таблице
 	*/
@@ -265,7 +268,7 @@ class DataBase {
 			return false;
 		}
 	}
-	
+
 	/*
 	* SELECT-метод возвращает данные из таблицы 
 	* с указанными колонками и указанными значениями 
@@ -275,7 +278,7 @@ class DataBase {
 	{
 		$query = 
 		"SELECT `".$this->oneWord($col)."` 
-		FROM `".$this->oneWord($table)."` 
+			FROM `".$this->oneWord($table)."` 
 		WHERE `".$this->oneWord($cel)."` = {?}";
 		
 		$params = array($value);
@@ -283,7 +286,7 @@ class DataBase {
 		if (count($res) == 0) return false;
 		else return true;
 	}
-	
+
 	/*
 	* Преобразование result_set в двумерный массив
 	*/
@@ -294,14 +297,14 @@ class DataBase {
 		}
 		return $array;
 	}
-	
+
 	/* 
 	* При уничтожении объекта закрывается соединение с базой данных 
 	*/
 	public function __destruct() {
 		if ($this->mysqli) $this->mysqli->close();
 	}
-	
+
 	/* 
 	* удаление пробелов в строке
 	*/
